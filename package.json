@@ -1,0 +1,12 @@
+{
+  "name": "nfe-exporter",
+  "version": "1.0.0",
+  "description": "Exportador de XMLs de NF-e do banco Oracle",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "oracledb": "^6.4.0"
+  }
+}
