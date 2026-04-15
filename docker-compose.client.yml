@@ -1,10 +1,8 @@
 services:
   nfe-exporter:
-    image: ghcr.io/SEU_USUARIO/nfe-exporter:latest
+    image: ghcr.io/matheusconsoli/nfe-exporter:latest
     container_name: nfe-exporter
     volumes:
-      # Configuração de conexão com o banco (edite antes de executar)
       - ./config.json:/app/config.json:ro
-      # Diretório onde os XMLs serão salvos no host
       - ./output:/app/output
     restart: "no"
