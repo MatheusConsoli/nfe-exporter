@@ -1,0 +1,13 @@
+{
+  "database": {
+    "user": "SEU_USUARIO",
+    "password": "SUA_SENHA",
+    "connectString": "HOST:PORT/SERVICE_NAME"
+  },
+  "output": {
+    "dir": "./output"
+  },
+  "query": {
+    "orgId": "SYN"
+  }
+}

@@ -1,0 +1,10 @@
+services:
+  nfe-exporter:
+    build: .
+    container_name: nfe-exporter
+    volumes:
+      # Monta o config externo (edite fora do container)
+      - ./config.json:/app/config.json:ro
+      # Monta o diretório de saída no host
+      - ./output:/app/output
+    restart: "no"
