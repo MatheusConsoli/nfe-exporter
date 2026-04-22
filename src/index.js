@@ -32,14 +32,30 @@ function timestamp() {
   return new Date().toISOString().replace('T', ' ').substring(0, 19);
 }
 
+// Instância do arquivo de log (preenchida no início do main)
+let logStream = null;
+
+// Escreve no console e no arquivo de log simultaneamente
 function log(msg) {
-  console.log(`[${timestamp()}] ${msg}`);
+  const line = `[${timestamp()}] ${msg}`;
+  console.log(line);
+  if (logStream) logStream.write(line + '\n');
 }
 
 async function main() {
   let connection;
 
   try {
+    // Cria o diretório de output e o arquivo de log com nome baseado na data/hora
+    ensureDir(config.output.dir);
+    const logFileName = `execucao_${new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19)}.log`;
+    const logFilePath = path.join(config.output.dir, logFileName);
+    logStream = fs.createWriteStream(logFilePath, { flags: 'a', encoding: 'utf8' });
+
+    log('='.repeat(50));
+    log('Iniciando NFe Exporter');
+    log('='.repeat(50));
+
     log('Conectando ao banco de dados Oracle...');
     connection = await oracledb.getConnection({
       user: config.database.user,
@@ -144,12 +160,12 @@ async function main() {
       }
     }
 
-    log('--------------------------------------------------');
-    log(`Processamento concluído.`);
-    log(`  Exportados    : ${exportados}`);
+    log('='.repeat(50));
+    log('Processamento concluído.');
+    log(`  Exportados     : ${exportados}`);
     log(`  Não encontrados: ${naoEncontrados}`);
-    log(`  Erros         : ${erros}`);
-    log('--------------------------------------------------');
+    log(`  Erros          : ${erros}`);
+    log('='.repeat(50));
 
   } catch (err) {
     log(`ERRO CRÍTICO: ${err.message}`);
@@ -158,6 +174,9 @@ async function main() {
     if (connection) {
       await connection.close();
       log('Conexão encerrada.');
+    }
+    if (logStream) {
+      logStream.end();
     }
   }
 }
