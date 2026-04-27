@@ -86,25 +86,25 @@ async function main() {
       try {
         // Busca o XML correspondente à chave de acesso
         const { rows } = await connection.execute(
-          `SELECT xml.id,
+          `SELECT stg.id,
                   emi.competencia,
                   emi.chave_acesso,
-                  xml.xml_enviado
+                  stg.arquivo_conteudo
              FROM nfe_emissao emi
-             JOIN dfe_xml_log xml ON emi.nfe_id = xml.documento_id
+             JOIN dfe_storage stg ON emi.nfe_id = stg.documento_id
             WHERE emi.org_id = :orgId
               AND emi.chave_acesso = :chaveAcesso
-              AND xml.id = (
-                    SELECT MAX(x2.id)
-                      FROM dfe_xml_log x2
-                     WHERE x2.documento_id = emi.nfe_id
+              AND stg.id = (
+                    SELECT MAX(s2.id)
+                      FROM dfe_storage s2
+                     WHERE s2.documento_id = emi.nfe_id
                   )`,
           {
             orgId: config.query.orgId,
             chaveAcesso: chaveAcesso,
           },
           {
-            fetchInfo: { XML_ENVIADO: { type: oracledb.STRING } },
+            fetchInfo: { ARQUIVO_CONTEUDO: { type: oracledb.STRING } },
           }
         );
 
