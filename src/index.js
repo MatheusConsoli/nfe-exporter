@@ -104,7 +104,7 @@ async function main() {
             chaveAcesso: chaveAcesso,
           },
           {
-            fetchInfo: { XML_ENVIADO: { type: oracledb.CLOB } },
+            fetchInfo: { XML_ENVIADO: { type: oracledb.STRING } },
           }
         );
 
@@ -120,10 +120,8 @@ async function main() {
           continue;
         }
 
-        const [id, competencia, chave, xmlClob] = rows[0];
+        const [id, competencia, chave, xmlContent] = rows[0];
 
-        // Lê o conteúdo do CLOB
-        const xmlContent = await clobToString(xmlClob);
 
         if (!xmlContent) {
           log(`  -> XML vazio para a chave ${chave}. Atualizando status como Não Encontrado...`);
