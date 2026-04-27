@@ -166,8 +166,9 @@ async function main() {
           continue;
         }
 
-        // Monta o caminho de saída: output/{competencia}/{chave_acesso}.xml
-        const outputDir = path.join(config.output.dir, competencia);
+        // Monta o caminho de saída: output/{ano}/{chave_acesso}.xml
+        const ano = competencia.substring(0, 4);
+        const outputDir = path.join(config.output.dir, ano);
         ensureDir(outputDir);
 
         const filePath = path.join(outputDir, `${chave}.xml`);
