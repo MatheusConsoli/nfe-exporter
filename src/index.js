@@ -64,6 +64,44 @@ async function main() {
     });
     log('Conexão estabelecida com sucesso.');
 
+    // Leitura e inserção das chaves do arquivo documentos.txt
+    const documentosPath = path.resolve(__dirname, '../documentos.txt');
+    if (fs.existsSync(documentosPath)) {
+      log('Arquivo documentos.txt encontrado. Processando chaves...');
+      const linhas = fs.readFileSync(documentosPath, 'utf8')
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l.length === 44);
+
+      log(`Total de chaves encontradas no arquivo: ${linhas.length}`);
+
+      let inseridos = 0;
+      let duplicados = 0;
+
+      for (const chave of linhas) {
+        try {
+          await connection.execute(
+            `INSERT INTO tmp_chave_acesso (chave_acesso) VALUES (:chave)`,
+            { chave }
+          );
+          await connection.commit();
+          inseridos++;
+        } catch (err) {
+          if (err.errorNum === 1) {
+            // ORA-00001: unique constraint violated (chave já existe)
+            duplicados++;
+          } else {
+            log(`  -> ERRO ao inserir chave ${chave}: ${err.message}`);
+          }
+        }
+      }
+
+      log(`Chaves inseridas: ${inseridos} | Duplicadas (ignoradas): ${duplicados}`);
+      log('-'.repeat(50));
+    } else {
+      log('Arquivo documentos.txt não encontrado. Pulando importação.');
+    }
+
     // Busca todas as chaves com status Pendente
     const { rows: chavesPendentes } = await connection.execute(
       `SELECT chave_acesso FROM tmp_chave_acesso WHERE status = 'Pendente'`
