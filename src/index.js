@@ -124,19 +124,13 @@ async function main() {
       try {
         // Busca o XML correspondente à chave de acesso
         const { rows } = await connection.execute(
-          `SELECT stg.id,
-                  emi.competencia,
+          `SELECT emi.competencia,
                   emi.chave_acesso,
                   stg.arquivo_conteudo
              FROM nfe_emissao emi
              JOIN dfe_storage stg ON emi.nfe_id = stg.documento_id
             WHERE emi.org_id = :orgId
-              AND emi.chave_acesso = :chaveAcesso
-              AND stg.id = (
-                    SELECT MAX(s2.id)
-                      FROM dfe_storage s2
-                     WHERE s2.documento_id = emi.nfe_id
-                  )`,
+              AND emi.chave_acesso = :chaveAcesso`,
           {
             orgId: config.query.orgId,
             chaveAcesso: chaveAcesso,
@@ -158,7 +152,7 @@ async function main() {
           continue;
         }
 
-        const [id, competencia, chave, xmlContent] = rows[0];
+        const [competencia, chave, xmlContent] = rows[0];
 
 
         if (!xmlContent) {
